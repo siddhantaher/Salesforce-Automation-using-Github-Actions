@@ -1,0 +1,30 @@
+<!--
+    Name  : EmailResponse
+    Developer Name : Parantap Srivastav
+    Description : This is a POC vf page which is used as one of the pages for the public site. 
+    https://svdashers-developer-edition.na111.force.com/'. Used to capture the response from the interviewer and create an event based on the response.
+-->
+
+<apex:page controller="receiveSMS" sidebar="false" showHeader="false" title="Enter Response SMS" lightningStyleSheets="true">
+    <apex:pagemessages />
+        <apex:form >
+            <br/>
+            <center><b>Receieve Response</b> <br/><br/>
+            <b>Your Name</b> &nbsp;&nbsp;&nbsp;&nbsp;<apex:inputtext value="{!InterviewerName}"/> <br/><br/><br/>
+            <b>Yes/No</b> &nbsp;&nbsp;&nbsp;&nbsp;<apex:inputtext value="{!response}"/>
+            <br/><br/>
+            <apex:outputPanel >
+                <apex:outputLabel > Select your option from the drop down</apex:outputLabel>
+                <br/><br/>
+                <apex:selectList value="{!selectedResponse}" multiselect="false" size="3">
+                    <apex:selectOption itemValue="None" itemLabel="--None--"/>
+                    <apex:selectOption itemValue="Yes" itemLabel="Yes"/>
+                    <apex:selectOption itemValue="No" itemLabel="No"/>
+                </apex:selectList>
+            </apex:outputPanel>
+            <br/><br/>
+            <apex:commandButton value="Submit" action="{!emailResponse}"/>
+            </center>
+        </apex:form>
+
+</apex:page>

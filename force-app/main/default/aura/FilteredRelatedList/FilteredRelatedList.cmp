@@ -1,0 +1,116 @@
+<aura:component controller="FilteredRelatedListCtrl" implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes,force:lightningQuickAction">
+    
+    <aura:attribute name="fieldTypeToDatatableType" type="Map" default="{
+        DATE            : 'date',
+        DATETIME        : 'date',
+        INTEGER         : 'number',
+        DOUBLE          : 'number',
+        CURRENCY        : 'number',
+        PERCENT         : 'number',
+        STRING          : 'text', 
+        REFERENCE       : 'text',
+        ID              : 'text',
+        PHONE           : 'tel',
+        BOOLEAN         : 'text',
+        EMAIL           : 'email',
+        TEXTAREA        : 'text',
+        PICKLIST        : 'text',
+        MULTIPICKLIST   : 'text',
+        DEFAULT         : 'text'
+    }"/>
+
+    <aura:attribute name="sObject" type="String"/>
+    <aura:attribute name="sObjectPlural" type="String"/>
+    <aura:attribute name="sObjectType" type="String"/>
+    <aura:attribute name="childRelationshipName" type="String"/>
+
+    <aura:attribute name="data" type="Object"/>
+
+    <aura:attribute name="columns" type="List" default="[]"/>
+    <aura:attribute name="columnLabels" type="List" default="[]"/>
+    <aura:attribute name="columnFieldTypes" type="List" default="[]"/>
+    <aura:attribute name="filters" type="List" default="[]"/>
+
+    <aura:attribute name="column1" type="String" default=""/>
+    <aura:attribute name="column2" type="String" default=""/>
+    <aura:attribute name="column3" type="String" default=""/> 
+    <aura:attribute name="column4" type="String" default=""/>
+    <aura:attribute name="column5" type="String" default=""/>
+    <aura:attribute name="column6" type="String" default=""/>
+
+    <aura:attribute name="filter1" type="String" default=""/>
+    <aura:attribute name="filter2" type="String" default=""/>
+    <aura:attribute name="filter3" type="String" default=""/>
+    <aura:attribute name="filter4" type="String" default=""/>
+    <aura:attribute name="filter5" type="String" default=""/>
+    <aura:attribute name="filter6" type="String" default=""/>
+
+    <aura:attribute name="queryString" type="String"/>
+    <aura:attribute name="originalQueryString" type="String"/>
+
+    <aura:attribute name="urlForViewAll" type="String"/>
+    <aura:attribute name="tableSize" type="Integer" default="0"/>
+    <aura:attribute name="sortedBy" type="String"/>
+    <aura:attribute name="sortedDirection" type="Boolean" default="true"/>
+
+    <aura:attribute name="filterOptions" type="List" default="[]"/>
+    <aura:attribute name="filterSelected" type="String" default=""/>
+
+    <aura:attribute name="options" type="List" default="[]"/>
+    <aura:attribute name="field" type="String" default=""/>
+    <aura:attribute name="operators" type="List" default="[]"/>
+    <aura:attribute name="operator" type="String" default=""/>
+    <aura:attribute name="filterValue" type="String" default=""/>
+
+    <aura:attribute name="activeSections" type="List" default="['A']" />
+
+    <aura:handler name="init" value="{!this}" action="{!c.init}"/>
+    
+    <div class="slds-box slds-theme_default">
+        <div class="slds-box slds-p-bottom_small slds-has-bottom-magnet">
+            <lightning:formattedText class="slds-text-heading_small" value="{!v.sObjectPlural + ' (' + v.tableSize + ')'}"/>
+            <lightning:accordion allowMultipleSectionsOpen="true" activeSectionName="{!v.activeSections}">
+                <lightning:accordionSection name="A" label="Preconfigured Filters">
+                    <lightning:combobox name="filterDropdown" label="Filters" value="{!v.filterSelected}" placeholder="- Select filter -" options="{!v.filterOptions}" onchange="{!c.handleSelect}"/>
+                </lightning:accordionSection>
+                <lightning:accordionSection name="B" label="Create Custom Filter">
+                    <lightning:layout verticalAlign="end">
+                        <lightning:layoutItem size="3" class="anchor-left slds-p-right_xxx-small">
+                            <lightning:combobox name="field" label="Field" value="{!v.field}" placeholder="- Select field -" options="{!v.options}" onchange="{!c.handleSelect}"/>
+                        </lightning:layoutItem>
+                        <lightning:layoutItem size="3" class="slds-p-right_xxx-small slds-p-left_xxx-small"> 
+                            <lightning:combobox name="operator" label="Operator" value="{!v.operator}" placeholder="- Select operator -" options="{!v.operators}" onchange="{!c.handleSelect}"/>
+                        </lightning:layoutItem>
+                        <lightning:layoutItem size="5" class="slds-p-left_xxx-small slds-p-right_xxx-small">
+                            <lightning:input label="Value" type="text" value="{!v.filterValue}"/>
+                        </lightning:layoutItem>
+                        <lightning:layoutItem size="5" class="slds-p-left_xxx-small">            
+                                <lightning:button label="Filter" variant="brand" onclick="{!c.handleFiltering}"/>
+                        </lightning:layoutItem>
+                    </lightning:layout>     
+                </lightning:accordionSection>
+            </lightning:accordion>       
+        </div>
+        <div class="slds-box slds-has-top-magnet">
+            <lightning:layout verticalAlign="end">
+                <lightning:layoutItem size="12" class="anchor-right slds-p-bottom_small">
+                    <lightning:button label="New" onclick="{!c.createRecord}"/>
+                </lightning:layoutItem>
+            </lightning:layout>
+            <div style="height:400px" class="slds-scrollable_y">
+                <lightning:datatable
+                        keyField="id"
+                        data="{!v.data}"
+                        columns="{!v.columns}"
+                        hideCheckboxColumn="true"
+                        onsort="{!c.updateColumnSorting}"
+                        onrowaction="{!c.handleRowAction}" 
+                        sortedBy="{!v.sortedBy}"
+                        sortedDirection="{!v.sortedDirection}" />
+            </div>
+        </div>
+        <br/>
+        <lightning:button class="slds-align_absolute-center" label="View All" onclick="{!c.viewAll}"/>
+    </div>
+
+</aura:component>

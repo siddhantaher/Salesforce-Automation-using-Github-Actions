@@ -1,0 +1,40 @@
+<template>
+      <div class="slds-m-top_medium slds-m-bottom_x-medium ">                   
+          <lightning-input label="Search" placeholder="Enter name here.." value={searchKey} onchange={search}></lightning-input>
+      </div>
+  <table class="slds-table slds-table_cell-buffer slds-table_bordered">
+
+  <thead>
+    <tr class="slds-line-height_reset">
+        <template for:each={columns} for:item="col">
+            <th key={col}  scope="col">
+                {col}
+            </th>
+        </template>
+    </tr>
+  </thead>
+  <tbody>
+    
+        <template for:each={accountlist} for:item="acc">
+            <tr key={acc.id}>       
+        <td key={acc.id} >
+            <a  data-value={acc.Id} onclick={navigateToRec}>{acc.Name}</a>
+          </td>
+          <td key={acc.id} >
+            {acc.Type}
+          </td>
+          <td key={acc.id} >
+              {acc.BillingStreet}
+          </td>
+          <td key={acc.id} >
+              {acc.Id}
+          </td>
+          <td >
+              <button type="submit"></button>
+          </td>
+        </tr>
+          </template>               
+
+  </tbody>
+</table>
+</template>

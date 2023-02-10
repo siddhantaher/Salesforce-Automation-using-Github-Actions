@@ -1,0 +1,44 @@
+<template>
+hi
+  <template if:true={isLoading}>
+    <div class={spinnerclass}>
+      <lightning-spinner alternative-text="Loading" variant="brand" size="large" class="slds-is-fixed">
+      </lightning-spinner>
+    </div>
+  </template>
+
+  <template if:true={opptyErrorMessage}>
+      <div class="errorNote">{opptyErrorMessage}</div>
+  </template>
+
+  <!-- <template if:false={opptyErrorMessage}> -->
+  
+      <template if:true={opptyRecord}>
+        <lightning-card>
+          <div class="slds-grid slds-grid_vertical">
+          
+            <div class="slds-col">
+                <div class="slds-p-around_medium ">
+                    <lightning-formatted-url value={opptyURL} tooltip={opptyURL} id="opptyURL"
+                    label="Opp" target="_blank" ></lightning-formatted-url>
+                </div>
+            </div>
+            <div class="slds-col">
+                <div class="slds-p-around_medium">
+                    <lightning-formatted-url value={accountURL} tooltip={accountURL} id="accountURL"
+                    label={opptyRecord.Account.Name} target="_blank" class="slds-var-p-left_large"></lightning-formatted-url>
+                </div>
+            </div>
+        </div>
+        </lightning-card>
+          
+  
+      </template>
+
+  <!-- </template> -->
+
+  <!-- <template if:false={opptyRecord}>
+      <h2 style="text-align: center;">Opportunity Information Not found.</h2>
+  </template> -->
+
+</template>

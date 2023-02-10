@@ -1,0 +1,69 @@
+<template>
+    <!-- <lightning-input label="Address" value={searchParam} onchange={getSugestion}></lightning-input>
+
+        <template for:each={result} for:item='data'>
+
+            <ul key={data.id}>
+              
+                <li onclick ={selectitem} key={data.description}>{data.description}</li>
+            </ul>
+
+        </template> -->
+        <lightning-card title="Address Autofill">
+        <div class="location">
+            <div class="slds-col slds-m-around_small">
+              <lightning-input
+                label="Search Address"
+                type="search"
+                onchange={getSugestion}
+                value={searchParam}
+                class="validValue imagingcenterinput"
+                required
+              >
+                <img class="closeicon" src={closeurl} onclick={clearSearch}/>
+              </lightning-input>
+  
+           
+                <template for:each={result} for:item="des">
+                    <div key={des.Id} class="record">
+                      <c-c-e-p_record-list
+                        key={des.Id}
+                        record={des}
+                        onselect={handleSelect}
+                        iconname={iconname}
+                      ></c-c-e-p_record-list>
+                    </div>
+              </template>
+
+            </div>
+            <template if:true={showAddressForm}>
+            <div class = "adderessForm">
+                <lightning-card>
+                    <div class='inputs slds-m-left_xx-large'>
+                        <lightning-input value={fullStreet} label = "Street Name"></lightning-input>
+                        <lightning-input value={country} label = "Country Name"></lightning-input>
+                        <lightning-input value={CountryCode} label = "Country Code"></lightning-input>
+          
+                        <lightning-input value={postalcode} label = "Postal code"></lightning-input>
+                        <lightning-input value={postalCodeSuffix} label = "Postal code Suffix"></lightning-input>
+                        <lightning-input value={city} label = "City Name"></lightning-input>
+                        <lightning-input value={state} label = "State Name"></lightning-input>
+                        <lightning-input value={stateCode} label = "State Code"></lightning-input>
+                    </div>
+      
+                </lightning-card>
+
+            
+
+
+              
+
+            </div> 
+          </template>
+          </div>
+        </lightning-card>
+
+
+
+
+</template>

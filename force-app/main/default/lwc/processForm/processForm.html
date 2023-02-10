@@ -1,0 +1,20 @@
+<template>
+    <lightning-card title="Process" class="Process">
+        <div class="slds-m-top_medium slds-m-bottom_x-large slds-align_absolute-center ObjectName">
+            <lightning-combobox class="comboSize" name="progress" label="Select Object " value={value} placeholder="Select Object"
+                options={ObjectOptions} onchange={handleObjectChange} required></lightning-combobox>
+        </div>
+        <template if:true={showField}>
+            <div class="slds-m-top_medium slds-m-bottom_x-large slds-align_absolute-center ObjectName">
+                <lightning-dual-listbox id="selectOptions" name="Select Options" label="Select Field"
+                    source-label="Available Options" selected-label="Selected Options" options={fieldOption}
+                    onchange={handleChange} required>
+                </lightning-dual-listbox>
+            </div>
+        </template>
+        <lightning-button variant="Neutral" label="Create DataTable" onclick={createDataTable}
+            class="slds-m-left_small slds-align_absolute-center"></lightning-button>
+
+    </lightning-card>
+
+</template>

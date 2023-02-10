@@ -1,0 +1,39 @@
+<template>
+
+    <div class="slds-box">
+        <lightning-card >
+            <div class="slds-grid">
+                <div class="slds-col slds-size_2-of-12 slds-m-left_large slds-m-bottom_x-large">
+                    OM Mailing Country
+                </div>
+                <div class="slds-col slds-size_4-of-12 slds-m-left_large slds-m-bottom_x-large">
+                    <c-custom-look-up obj-name="country__c" search-placeholder="Search Country"  onlookupselected={handleAccountSelection} onlookupremoved={clearAccount}>  </c-custom-look-up>
+
+                </div>
+               
+
+            </div>
+            <div class="slds-grid">
+                <div class="slds-col slds-size_2-of-12 slds-m-left_large slds-m-bottom_x-large">
+                    OM Mailing State
+                </div>
+            <div class="slds-col slds-size_4-of-12 slds-m-left_large">
+                <!-- <c-custom-look-up obj-name="state__c" search-placeholder="Search State"  onlookupselected={handleStateSelection} filter={filterCriteria}>  </c-custom-look-up> -->
+                <lightning-combobox
+                name="progress"
+                label="Select state"
+                value={value}
+                placeholder="Select State"
+                options={stateList}
+                onchange={handleStateSelection}
+                variant = "label-hidden"
+                disabled ={stateDisabled}>
+            </lightning-combobox>
+            </div>
+        </div>
+
+        </lightning-card>
+
+
+</div>
+</template>

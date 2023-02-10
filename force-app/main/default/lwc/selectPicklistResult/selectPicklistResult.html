@@ -1,0 +1,12 @@
+<template>
+    <li class="slds-listbox__item" role="presentation" onclick={selectHandler} data-value={option.value} data-selected={option.selected}>
+        <span class={showIsSelected} role="option">
+            <span class="slds-media__figure">
+                <lightning-icon icon-name="utility:check" size="x-small" class="slds-icon-utility-check slds-current-color slds-listbox__icon-selected slds-icon_container"></lightning-icon>
+            </span>
+            <span class="slds-media__body">
+                <span class="slds-truncate" title={option.label}>&nbsp;{option.label}</span>
+            </span>
+        </span>
+    </li>
+</template>

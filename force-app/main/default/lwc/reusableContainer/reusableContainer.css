@@ -1,0 +1,13 @@
+.container{
+    display: flex;
+    border: 5px solid black;
+    justify-content: space-around;
+}
+
+ .welcomce{
+    flex: 2;
+}
+
+.container .div{
+    flex:1;
+}

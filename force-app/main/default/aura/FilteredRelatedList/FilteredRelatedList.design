@@ -1,0 +1,16 @@
+<design:component >
+    <design:attribute name="sObject" label="SObject"/>
+    <design:attribute name="childRelationshipName" label="Child Relationship Name"/>
+    <design:attribute name="column1" label="Column 1"/>
+    <design:attribute name="column2" label="Column 2"/>
+    <design:attribute name="column3" label="Column 3"/>
+    <design:attribute name="column4" label="Column 4"/>
+    <design:attribute name="column5" label="Column 5"/>
+    <design:attribute name="column6" label="Column 6"/>
+    <design:attribute name="filter1" label="Filter 1"/>
+    <design:attribute name="filter2" label="Filter 2"/>
+    <design:attribute name="filter3" label="Filter 3"/>
+    <design:attribute name="filter4" label="Filter 4"/>
+    <design:attribute name="filter5" label="Filter 5"/>
+    <design:attribute name="filter6" label="Filter 6"/>
+</design:component>

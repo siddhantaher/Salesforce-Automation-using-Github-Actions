@@ -1,0 +1,24 @@
+<template>
+    <div class="slds-form-element slds-lookup slds-is-close" data-id="searchResult" onmouseleave={moveAwayHandler}>
+        <div class="slds-form-element__control">
+            <div class="slds-input-has-icon slds-input-has-icon--right">
+                <template if:true={showLabel}>
+                <label if:false={picklistRequired} class="slds-form-element__label">{picklistName}</label>
+                <label if:true={picklistRequired} class="slds-form-element__label">
+                    <abbr class="slds-required" title="required">* </abbr>{picklistName}</label>
+                </template>
+                <div data-id="inputSelectField" class="slds-show slds-form-element">
+                    <div class="slds-form-element__control">
+                        <lightning-icon data-id="edit" class="slds-input__icon" icon-name="utility:down" size="x-small" alternative-text="click"></lightning-icon>
+                        <input autocomplete="off" value={displaySelectedVal}  role="textbox" placeholder={picklistPlaceholder} class="inputPicklist slds-input slds-combobox__input" onclick={dropDownSelectHandler} disabled={isDisabled}/>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <ul class="resultShow slds-listbox slds-listbox_vertical slds-dropdown slds-dropdown_fluid slds-lookup__menu" role="listbox">
+            <template for:each={displayOptions} for:item="option">
+                <c-select-picklist-result key={option.value} option={option} onpicklistselect={handlePicklistSelection}></c-select-picklist-result>
+            </template>
+        </ul>
+    </div>
+</template>

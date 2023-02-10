@@ -1,0 +1,13 @@
+.article .slds-card{
+    height: 100%;
+    width: 50%;
+}
+.ObjectName{
+    width: 40%;
+}
+.comboSize{
+    width: 100%;
+}
+[lightning-dualListbox_dualListbox-host] {
+    width: 100%;
+}

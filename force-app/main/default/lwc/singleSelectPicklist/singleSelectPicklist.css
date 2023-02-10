@@ -1,0 +1,32 @@
+.inputPicklist[readonly] {
+    background-color: #fff;
+    border: 1px solid #dddbda;
+    border-radius: .25rem;
+    width: 100%;
+    transition: border .1s linear,background-color .1s linear;
+    display: inline-block;
+    padding: 0 1rem 0 .75rem;
+    line-height: 1.875rem;
+}
+
+.resultShow {
+    min-height:40px;
+    margin-top:0 !important;
+    max-height:135px;
+    overflow-y:scroll;
+    min-width: unset !important;
+}
+
+.border-sticky {
+    margin-top:0 !important;
+}
+
+.slds-input[disabled] {
+    background-color: #ecebea;
+    border-color: #c9c7c5;
+    cursor: not-allowed;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+}
