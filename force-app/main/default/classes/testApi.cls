@@ -1,5 +1,5 @@
-public with shaing class testApi {
+public with sharing class testApi {
     public testApi() {
-    system.debug('236')
+        system.debug('236');
     }
 }
