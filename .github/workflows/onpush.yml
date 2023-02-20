@@ -38,7 +38,7 @@ jobs:
     - name: 'Run Test on Metadata'
       run: sfdx force:mdapi:deploy --deploydir=convert --testlevel=RunLocalTests  -u hub-org 
     - name: 'Destructive Changes'
-      run: sfdx force:source:deploy --manifest package.xml --predestructivechanges preDestruct.xml
+      run: sfdx force:source:deploy --manifest package.xml --postdestructivechanges preDestruct.xml
 
 
     
