@@ -32,7 +32,3 @@ jobs:
       run: |
         echo username value ${{ secrets.USERNAME_STAGING }}
         sfdx force:auth:jwt:grant --clientid=${{ secrets.CONSUMER_KEY }} --username=${{ secrets.USERNAME }} --jwtkeyfile server.key --setdefaultdevhubusername --setalias=hub-org
-    - name: 'Report'
-      run: sfdx force:source:deploy:report
-    - name: 'Destructive Changes'
-      run: sfdx force:source:deploy -x package.xml --predestructivechanges preDestruct.xml
