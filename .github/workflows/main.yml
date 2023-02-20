@@ -32,6 +32,12 @@ jobs:
       run: |
         echo username value ${{ secrets.USERNAME_STAGING }}
         sfdx force:auth:jwt:grant --clientid=${{ secrets.CONSUMER_KEY }} --username=${{ secrets.USERNAME }} --jwtkeyfile server.key --setdefaultdevhubusername --setalias=hub-org
+    - name: 'Code formatting verification with Prettier'
+      run: npm run prettier:verify
+
+            # Lint LWC / Aura
+    - name: 'Lint Lightning Web Components / Aura Components'
+      run: npm run lint
     - name: 'Convert Metadata'
       run: sfdx force:source:convert --rootdir=force-app --outputdir=convert
     - name: 'Run Test on Metadata'
