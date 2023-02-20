@@ -33,18 +33,6 @@ jobs:
       run: |
         echo username value ${{ secrets.USERNAME_STAGING }}
         sfdx force:auth:jwt:grant --clientid=${{ secrets.CONSUMER_KEY }} --username=${{ secrets.USERNAME }} --jwtkeyfile server.key --setdefaultdevhubusername --setalias=hub-org
-    - name: 'Installing sfdx git delta'
-      run: | 
-          echo y | sfdx plugins:install sfdx-git-delta
-          sfdx plugins 
-    # Install java as it is required for the next step
-    - name: 'Installing java'
-      run: |
-        sudo apt-get update
-        sudo apt install default-jdk
-    # Install SFDX scanner
-    - name: 'Installing SFDX scanner'
-      run: sfdx plugins:install @salesforce/sfdx-scanner
     - name: 'Convert Metadata'
       run: sfdx force:source:convert --rootdir=force-app --outputdir=convert
     - name: 'Run Test on Metadata'
