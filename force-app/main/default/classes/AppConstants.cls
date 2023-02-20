@@ -19,6 +19,7 @@ public class AppConstants {
     public static final String HEADER_MISSING_DEVNAME_AND_LABEL = 'Header must contain atleast one of these two fields - '+ DEV_NAME_ATTRIBUTE + ', ' + LABEL_ATTRIBUTE +'.';
 
     // Do not change value for ERROR_UNAUTHORIZED_ENDPOINT
- 	public static final String ERROR_UNAUTHORIZED_ENDPOINT	= 'Unauthorized endpoint, please check Setup';	   
+ 	public static final String ERROR_UNAUTHORIZED_ENDPOINT	= 'Unauthorized endpoint, please check Setup';	 
+      
 
 }
