@@ -70,7 +70,7 @@ jobs:
       - name: Get changed files
         id: diff
         run: |
-          CHANGED_FILES=$(git diff --name-only ${{ github.event.pull_request.base.sha }} ${{ github.sha }} | grep '\.cls$' || true)
+          CHANGED_FILES=$(git diff --name-only origin/${{ github.event.pull_request.base.ref }}...${GITHUB_HEAD_REF} | grep '\.cls$' || true)
           echo "files=$CHANGED_FILES" >> $GITHUB_OUTPUT
       - name: Run Prettier
         if: steps.diff.outputs.files != ''
