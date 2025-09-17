@@ -54,5 +54,5 @@ jobs:
         run: |
           pmd check \
             --dir force-app/main/default/classes \
-            --rulesets apex-design,apex-performance,apex-security,apex-bestpractices \
+            --rulesets category/apex/design.xml,category/apex/performance.xml,category/apex/security.xml,category/apex/bestpractices.xml \
             --format text
