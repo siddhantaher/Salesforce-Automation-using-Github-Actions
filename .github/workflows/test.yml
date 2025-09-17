@@ -50,8 +50,8 @@ jobs:
           unzip pmd.zip -d $HOME
           echo "$HOME/pmd-bin-7.0.0/bin" >> $GITHUB_PATH
 
-      - name: Run PMD Scan on Apex classes
-        run: |
+      -  name: Run PMD Scan
+         run: |
           pmd check \
             --dir force-app/main/default/classes \
             --rulesets category/apex/design.xml,category/apex/performance.xml,category/apex/security.xml,category/apex/bestpractices.xml \
