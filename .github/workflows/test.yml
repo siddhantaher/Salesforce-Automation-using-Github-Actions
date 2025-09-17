@@ -1,4 +1,4 @@
-name: PR Title, Branch Name, and PMD Scan
+name: Salesforce PR Validation
 
 on:
   pull_request:
@@ -6,6 +6,7 @@ on:
 
 jobs:
   branch-name-check:
+    name: 🔀 Branch Name Validation
     runs-on: ubuntu-latest
     steps:
       - name: Check branch name
@@ -18,6 +19,7 @@ jobs:
           echo "✅ Branch name is valid."
 
   pr-title-check:
+    name: 📝 PR Title Validation
     runs-on: ubuntu-latest
     steps:
       - name: Check PR title
@@ -30,6 +32,7 @@ jobs:
           echo "✅ PR title is valid."
 
   pmd-scan:
+    name: ⚡ PMD Scan (Apex Classes)
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repo
