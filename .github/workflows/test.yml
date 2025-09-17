@@ -66,3 +66,24 @@ jobs:
             --rulesets category/apex/design.xml,category/apex/performance.xml,category/apex/security.xml,category/apex/bestpractices.xml \
             --format text \
             --failOnViolation true
+
+  prettier-format:
+    name: 🎨 Prettier Formatting Check
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+
+      - name: Install Prettier for Apex
+        run: |
+          npm install --global prettier prettier-plugin-apex
+
+      - name: Run Prettier check
+        run: |
+          echo "Checking Apex formatting..."
+          prettier --check "**/*.cls"
