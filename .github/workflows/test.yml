@@ -60,21 +60,30 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
+  
+      - name: Fetch target branch
+        run: |
+          git fetch origin ${{ github.event.pull_request.base.ref }}:refs/remotes/origin/${{ github.event.pull_request.base.ref }}
+  
       - name: Set up Node
         uses: actions/setup-node@v3
         with:
           node-version: '20'
+  
       - name: Install Prettier and Apex Plugin
         run: |
           npm install --save-dev prettier prettier-plugin-apex
+  
       - name: Get changed files
         id: diff
         run: |
           CHANGED_FILES=$(git diff --name-only origin/${{ github.event.pull_request.base.ref }}...${GITHUB_HEAD_REF} | grep '\.cls$' || true)
           echo "files=$CHANGED_FILES" >> $GITHUB_OUTPUT
+  
       - name: Run Prettier
         if: steps.diff.outputs.files != ''
         run: |
           FILES=$(echo "${{ steps.diff.outputs.files }}" | tr '\n' ' ')
           echo "Checking formatting with Prettier on changed files: $FILES"
           npx prettier --plugin-search-dir=. --check $FILES
+  
