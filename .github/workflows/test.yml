@@ -3,7 +3,8 @@ name: PR Validation
 on:
   pull_request:
     paths:
-      - 'force-app/**'
+      - main
+      - develop
 
 jobs:
   # 1️⃣ Check Branch Name
