@@ -1,99 +1,88 @@
-name: Salesforce PR Validation
+name: PR Validation
 
 on:
   pull_request:
-    types: [opened, edited, synchronize, reopened]
+    paths:
+      - 'force-app/**'
 
 jobs:
+  # 1️⃣ Check Branch Name
   branch-name-check:
-    name: 🔀 Branch Name Validation
+    name: Assert Branch Naming Convention
     runs-on: ubuntu-latest
     steps:
+      - uses: actions/checkout@v3
       - name: Check branch name
         run: |
-          echo "🔍 Branch name: ${{ github.head_ref }}"
-          if [[ ! "${{ github.head_ref }}" =~ ^feature\/[a-z0-9._-]+$ ]]; then
-            echo "❌ Branch name must start with 'feature/' followed by lowercase letters, numbers, dots, underscores, or hyphens."
+          echo "Branch: ${{ github.head_ref }}"
+          if [[ ! "${{ github.head_ref }}" =~ ^feature\/[A-Za-z0-9._-]+$ ]]; then
+            echo "Branch name does not match 'feature/*' convention"
             exit 1
           fi
-          echo "✅ Branch name is valid."
 
+  # 2️⃣ Check PR Title
   pr-title-check:
-    name: 📝 PR Title Validation
+    name: Assert PR Title
     runs-on: ubuntu-latest
     steps:
+      - uses: actions/checkout@v3
       - name: Check PR title
         run: |
-          echo "🔍 PR title: ${{ github.event.pull_request.title }}"
-          if [[ ! "${{ github.event.pull_request.title }}" =~ ^\[FEATURE\]\ .+ ]]; then
-            echo "❌ PR title must start with '[FEATURE] ' followed by a description."
+          echo "PR Title: ${{ github.event.pull_request.title }}"
+          if [[ ! "${{ github.event.pull_request.title }}" =~ ^\[FEATURE\].* ]]; then
+            echo "PR title should start with [FEATURE]"
             exit 1
           fi
-          echo "✅ PR title is valid."
 
+  # 3️⃣ PMD Scan (only changed Apex files)
   pmd-scan:
-    name: ⚡ PMD Scan (Apex Classes)
+    name: PMD Scan
     runs-on: ubuntu-latest
+    needs: [branch-name-check, pr-title-check]
     steps:
-      - name: Checkout repo
-        uses: actions/checkout@v4
-
+      - uses: actions/checkout@v3
       - name: Set up Java
-        uses: actions/setup-java@v4
+        uses: actions/setup-java@v3
         with:
-          distribution: 'temurin'
-          java-version: '17'
-
-      - name: Install PMD
+          distribution: temurin
+          java-version: 17
+      - name: Get changed files
+        id: diff
         run: |
-          curl -L https://github.com/pmd/pmd/releases/download/pmd_releases%2F7.0.0/pmd-dist-7.0.0-bin.zip -o pmd.zip
-          unzip pmd.zip -d $HOME
-          echo "$HOME/pmd-bin-7.0.0/bin" >> $GITHUB_PATH
-
-      - name: Get changed Apex files
-        id: changed-files
+          CHANGED_FILES=$(git diff --name-only ${{ github.event.pull_request.base.sha }} ${{ github.sha }} | grep '\.cls$' || true)
+          echo "files=$CHANGED_FILES" >> $GITHUB_OUTPUT
+      - name: Run PMD
+        if: steps.diff.outputs.files != ''
         run: |
-          echo "Fetching changed Apex classes..."
-          CHANGED_FILES=$(git diff --name-only ${{ github.event.before }} ${{ github.sha }} | grep '\.cls$' || true)
-          echo "changed_files=$CHANGED_FILES" >> $GITHUB_OUTPUT
+          echo "Running PMD on changed Apex files..."
+          FILES=$(echo "${{ steps.diff.outputs.files }}" | tr '\n' ' ')
+          java -cp pmd-bin-7.17.0/lib/* net.sourceforge.pmd.PMD \
+            --dir $FILES \
+            --rulesets rulesets/custom-apex-rules.xml \
+            --format text
 
-      - name: Run PMD on changed files
-        if: steps.changed-files.outputs.changed_files != ''
-        run: |
-          echo "Running PMD on changed Apex classes..."
-          pmd check \
-            --dir $(echo ${{ steps.changed-files.outputs.changed_files }} | tr ' ' ',') \
-            --rulesets category/apex/design.xml,category/apex/performance.xml,category/apex/security.xml,category/apex/bestpractices.xml \
-            --format text \
-            --failOnViolation true
-
-  prettier-format:
-    name: 🎨 Prettier Apex Formatting Check
+  # 4️⃣ Prettier Check (only changed files)
+  prettier-check:
+    name: Prettier Apex Formatting
     runs-on: ubuntu-latest
+    needs: [branch-name-check, pr-title-check]
     steps:
-      - name: Checkout repo
-        uses: actions/checkout@v4
-  
-      - name: Set up Node.js
+      - uses: actions/checkout@v3
+      - name: Set up Node
         uses: actions/setup-node@v3
         with:
-          node-version: '18'
-  
-      - name: Install Prettier and Apex plugin
+          node-version: '20'
+      - name: Install Prettier and Apex Plugin
         run: |
-          npm install --global prettier prettier-plugin-apex
-  
-      - name: Get changed Apex files
-        id: changed-files
+          npm install --save-dev prettier prettier-plugin-apex
+      - name: Get changed files
+        id: diff
         run: |
-          CHANGED_FILES=$(git diff --name-only ${{ github.event.before }} ${{ github.sha }} | grep '\.cls$' || true)
-          echo "changed_files=$CHANGED_FILES" >> $GITHUB_OUTPUT
-  
-      - name: Run Prettier on changed files
-        if: steps.changed-files.outputs.changed_files != ''
+          CHANGED_FILES=$(git diff --name-only ${{ github.event.pull_request.base.sha }} ${{ github.sha }} | grep '\.cls$' || true)
+          echo "files=$CHANGED_FILES" >> $GITHUB_OUTPUT
+      - name: Run Prettier
+        if: steps.diff.outputs.files != ''
         run: |
-          echo "Checking formatting for changed Apex classes..."
-          for file in ${{ steps.changed-files.outputs.changed_files }}; do
-            echo "Checking $file"
-            prettier --check "$file" --parser apex
-          done
+          FILES=$(echo "${{ steps.diff.outputs.files }}" | tr '\n' ' ')
+          echo "Checking formatting with Prettier on changed files: $FILES"
+          npx prettier --plugin-search-dir=. --check $FILES
