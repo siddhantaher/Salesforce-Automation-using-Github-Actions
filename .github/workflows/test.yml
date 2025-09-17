@@ -1,0 +1,55 @@
+name: PR Title, Branch Name, and PMD Scan
+
+on:
+  pull_request:
+    types: [opened, edited, synchronize, reopened]
+
+jobs:
+  branch-name-check:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check branch name
+        run: |
+          echo "🔍 Branch name: ${{ github.head_ref }}"
+          if [[ ! "${{ github.head_ref }}" =~ ^feature\/[a-z0-9._-]+$ ]]; then
+            echo "❌ Branch name must start with 'feature/' followed by lowercase letters, numbers, dots, underscores, or hyphens."
+            exit 1
+          fi
+          echo "✅ Branch name is valid."
+
+  pr-title-check:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check PR title
+        run: |
+          echo "🔍 PR title: ${{ github.event.pull_request.title }}"
+          if [[ ! "${{ github.event.pull_request.title }}" =~ ^\[FEATURE\]\ .+ ]]; then
+            echo "❌ PR title must start with '[FEATURE] ' followed by a description."
+            exit 1
+          fi
+          echo "✅ PR title is valid."
+
+  pmd-scan:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Set up Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+
+      - name: Install PMD
+        run: |
+          curl -L https://github.com/pmd/pmd/releases/download/pmd_releases%2F7.0.0/pmd-dist-7.0.0-bin.zip -o pmd.zip
+          unzip pmd.zip -d $HOME
+          echo "$HOME/pmd-bin-7.0.0/bin" >> $GITHUB_PATH
+
+      - name: Run PMD Scan on Apex classes
+        run: |
+          pmd check \
+            --dir force-app/main/default/classes \
+            --rulesets apex-design,apex-performance,apex-security,apex-bestpractices \
+            --format text
