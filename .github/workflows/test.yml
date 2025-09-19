@@ -1,100 +1,54 @@
-name: PR Checks
+name: Enforce Branch, PR, and Commit Conventions
 
 on:
   pull_request:
-    types: [opened, edited, reopened, synchronize]
+    types: [opened, synchronize, reopened, edited]
 
 jobs:
-  branch-name-check:
-    name: Assert Branch Naming Convention
+  validate:
+    name: Validate Branch, PR & Commits
     runs-on: ubuntu-latest
+
     steps:
-      - uses: actions/checkout@v3
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      # -------------------------------
+      # Branch Name Check
+      # -------------------------------
       - name: Check Branch Name
         run: |
           BRANCH_NAME="${{ github.head_ref }}"
-          if [[ ! "$BRANCH_NAME" =~ ^feature/ ]]; then
-            echo "Branch name must start with 'feature/'"
+          if [[ ! "$BRANCH_NAME" =~ ^(feat|fix|chore|refactor|docs|test|style|perf)\/[A-Z]+-[0-9]+(-[a-z0-9._-]+)?$ ]]; then
+            echo "❌ Branch name must follow <type>/<JIRA-ID>-description (e.g., feat/ABC-123-add-login)"
             exit 1
           fi
+          echo "✅ Branch name is valid: $BRANCH_NAME"
 
-  pr-title-check:
-    name: Assert PR Title
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3
+      # -------------------------------
+      # PR Title Check
+      # -------------------------------
       - name: Check PR Title
         run: |
           PR_TITLE="${{ github.event.pull_request.title }}"
-          if [[ ! "$PR_TITLE" =~ ^\[FEATURE\].* ]]; then
-            echo "PR title must start with '[FEATURE]'"
+          if [[ ! "$PR_TITLE" =~ ^(feat|fix|chore|refactor|docs|test|style|perf)(\(.+\))?\s\[[A-Z]+-[0-9]+\]:\s.+$ ]]; then
+            echo "❌ PR title must follow Conventional Commits with Jira ID (e.g., feat(auth) [ABC-123]: add login endpoint)"
             exit 1
           fi
+          echo "✅ PR title is valid: $PR_TITLE"
 
-  pmd-scan:
-    name: PMD Apex Scan (Diff Only)
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3
-      - name: Set up Java
-        uses: actions/setup-java@v3
-        with:
-          distribution: temurin
-          java-version: 17
-      - name: Get changed Apex files
-        id: diff
+      # -------------------------------
+      # Commit Messages Check
+      # -------------------------------
+      - name: Check commits in PR
         run: |
-          echo "::set-output name=files::$(git diff --name-only origin/${{ github.base_ref }}...HEAD | grep '\.cls$' || true)"
-      - name: Run PMD
-        if: steps.diff.outputs.files != ''
-        run: |
-          FILES=$(echo "${{ steps.diff.outputs.files }}" | tr '\n' ' ')
-          echo "Running PMD on changed files: $FILES"
-          pmd check \
-            --dir $FILES \
-            --rulesets /absolute/path/to/pmd-rulesets/apex-design.xml,/absolute/path/to/pmd-rulesets/apex-performance.xml,/absolute/path/to/pmd-rulesets/apex-security.xml,/absolute/path/to/pmd-rulesets/apex-bestpractices.xml \
-            --format text
-
-  prettier-check:
-  name: Prettier Apex Formatting
-  runs-on: ubuntu-latest
-  steps:
-    # 1. Checkout full repo history
-    - uses: actions/checkout@v3
-      with:
-        fetch-depth: 0
-
-    # 2. Set up Node.js
-    - name: Set up Node
-      uses: actions/setup-node@v3
-      with:
-        node-version: '20'
-
-    # 3. Install Prettier with Apex plugin
-    - name: Install Prettier and Apex Plugin
-      run: |
-        npm install --save-dev prettier prettier-plugin-apex
-
-    # 4. Fetch both base and PR branches
-    - name: Fetch base branch
-      run: |
-        git fetch origin ${{ github.event.pull_request.base.ref }}
-
-    - name: Fetch PR branch
-      run: |
-        git fetch origin ${{ github.head_ref }}
-
-    # 5. Get changed .cls files only
-    - name: Get changed .cls files
-      id: changed-files
-      run: |
-        CHANGED_FILES=$(git diff --name-only origin/${{ github.event.pull_request.base.ref }}..origin/${{ github.head_ref }} | grep '\.cls$' || true)
-        echo "files=$CHANGED_FILES" >> $GITHUB_OUTPUT
-
-    # 6. Run Prettier only on changed files
-    - name: Run Prettier
-      if: steps.changed-files.outputs.files != ''
-      run: |
-        FILES=$(echo "${{ steps.changed-files.outputs.files }}" | tr '\n' ' ')
-        echo "Checking formatting with Prettier on changed files: $FILES"
-        npx prettier --plugin-search-dir=. --check $FILES
+          git fetch origin ${{ github.base_ref }} --depth=1
+          for commit in $(git rev-list origin/${{ github.base_ref }}..${{ github.head_ref }}); do
+            MSG=$(git log --format=%B -n 1 $commit)
+            if ! [[ "$MSG" =~ ^(feat|fix|chore|refactor|docs|test|style|perf)(\(.+\))?\s\[[A-Z]+-[0-9]+\]:\s.+$ ]]; then
+              echo "❌ Commit '$commit' message does not follow Conventional Commits with Jira ID:"
+              echo "$MSG"
+              exit 1
+            fi
+          done
+          echo "✅ All commit messages follow Conventional Commits with Jira IDs"
