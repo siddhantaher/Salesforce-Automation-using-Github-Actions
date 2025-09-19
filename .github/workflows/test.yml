@@ -19,8 +19,8 @@ jobs:
       - name: Check Branch Name
         run: |
           BRANCH_NAME="${{ github.head_ref }}"
-          if [[ ! "$BRANCH_NAME" =~ ^(feat|fix|chore|refactor|docs|test|style|perf)\/[A-Z]+-[0-9]+(-[a-z0-9._-]+)?$ ]]; then
-            echo "❌ Branch name must follow <type>/<JIRA-ID>-description (e.g., feat/ABC-123-add-login)"
+          if [[ ! "$BRANCH_NAME" =~ ^(feat|fix|chore|refactor|docs|test|style|perf)\/[A-Za-z0-9]+-[0-9]+(-[a-z0-9._-]+)?$ ]]; then
+            echo "❌ Branch name must follow <type>/<JIRA-ID>-description (e.g., feat/ABC12-123-add-login)"
             exit 1
           fi
           echo "✅ Branch name is valid: $BRANCH_NAME"
@@ -31,8 +31,8 @@ jobs:
       - name: Check PR Title
         run: |
           PR_TITLE="${{ github.event.pull_request.title }}"
-          if [[ ! "$PR_TITLE" =~ ^(feat|fix|chore|refactor|docs|test|style|perf)(\(.+\))?\s\[[A-Z]+-[0-9]+\]:\s.+$ ]]; then
-            echo "❌ PR title must follow Conventional Commits with Jira ID (e.g., feat(auth) [ABC-123]: add login endpoint)"
+          if [[ ! "$PR_TITLE" =~ ^(feat|fix|chore|refactor|docs|test|style|perf)(\(.+\))?\s\[[A-Za-z0-9]+-[0-9]+\]:\s.+$ ]]; then
+            echo "❌ PR title must follow Conventional Commits with Jira ID (e.g., feat(auth) [ABC12-123]: add login endpoint)"
             exit 1
           fi
           echo "✅ PR title is valid: $PR_TITLE"
@@ -45,7 +45,7 @@ jobs:
           git fetch origin ${{ github.base_ref }} --depth=1
           for commit in $(git rev-list origin/${{ github.base_ref }}..${{ github.head_ref }}); do
             MSG=$(git log --format=%B -n 1 $commit)
-            if ! [[ "$MSG" =~ ^(feat|fix|chore|refactor|docs|test|style|perf)(\(.+\))?\s\[[A-Z]+-[0-9]+\]:\s.+$ ]]; then
+            if ! [[ "$MSG" =~ ^(feat|fix|chore|refactor|docs|test|style|perf)(\(.+\))?\s\[[A-Za-z0-9]+-[0-9]+\]:\s.+$ ]]; then
               echo "❌ Commit '$commit' message does not follow Conventional Commits with Jira ID:"
               echo "$MSG"
               exit 1
