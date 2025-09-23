@@ -2,45 +2,64 @@ name: Enforce Branch, PR, and Commit Conventions
 
 on:
   pull_request:
-    types: [opened, synchronize, reopened, edited]
+    types: [opened, edited, synchronize, reopened]
 
 jobs:
   validate:
-    name: Validate Branch, PR & Commits
     runs-on: ubuntu-latest
-    
+
     steps:
-      - name: Checkout code
+      # ------------------------
+      # Checkout PR branch
+      # ------------------------
+      - name: Checkout PR branch
         uses: actions/checkout@v4
         with:
-          fetch-depth: 0   # fetch full history
+          fetch-depth: 0  # full history required for commit checks
           ref: ${{ github.head_ref }}
 
+      # ------------------------
+      # Validate PR title
+      # ------------------------
       - name: Validate PR title
         run: |
-          echo "PR_TITLE=${{ github.event.pull_request.title }}"
           PR_TITLE="${{ github.event.pull_request.title }}"
+          echo "PR Title: $PR_TITLE"
           if ! [[ "$PR_TITLE" =~ ^(feat|fix|chore|refactor|docs|test|style|perf)\([a-zA-Z0-9_-]+\)\ \[[A-Za-z0-9]+-[0-9]+\]:\ .+ ]]; then
-            echo "❌ PR title must follow Conventional Commits with Jira ID (e.g., feat(auth) [ABC12-123]: add login endpoint)"
+            echo "❌ PR title must follow Conventional Commits with Jira ID"
+            echo "Example: feat(auth) [ABC12-123]: add login endpoint"
             exit 1
           fi
           echo "✅ PR title follows Conventional Commits with Jira ID"
 
+      # ------------------------
+      # Validate branch name
+      # ------------------------
       - name: Validate branch name
         run: |
-          echo "BRANCH_NAME=${{ github.head_ref }}"
           BRANCH_NAME="${{ github.head_ref }}"
+          echo "Branch Name: $BRANCH_NAME"
           if ! [[ "$BRANCH_NAME" =~ ^(feat|fix|chore|refactor|docs|test|style|perf)\/[A-Za-z0-9]+-[0-9]+-[a-z0-9-]+$ ]]; then
-            echo "❌ Branch name must follow <type>/<JIRA-ID>-description (e.g., feat/ABC12-123-add-login)"
+            echo "❌ Branch name must follow <type>/<JIRA-ID>-description"
+            echo "Example: feat/ABC12-123-add-login"
             exit 1
           fi
           echo "✅ Branch name follows required format"
 
+      # ------------------------
+      # Fetch base branch for commit diff
+      # ------------------------
       - name: Fetch base branch
         run: git fetch origin ${{ github.base_ref }} --depth=0
-      
+
+      # ------------------------
+      # Validate commit messages
+      # ------------------------
       - name: Validate commit messages
         run: |
+          echo "🔎 Commits being checked:"
+          git rev-list origin/${{ github.base_ref }}..HEAD | tee /dev/tty
+
           for commit in $(git rev-list origin/${{ github.base_ref }}..HEAD); do
             MSG=$(git log --format=%B -n 1 $commit)
             MSG="$(echo "$MSG" | xargs)" # trim whitespace
@@ -50,5 +69,5 @@ jobs:
               exit 1
             fi
           done
-          echo "✅ All commit messages follow Conventional Commits with Jira IDs"
 
+          echo "✅ All commit messages follow Conventional Commits with Jira IDs"
