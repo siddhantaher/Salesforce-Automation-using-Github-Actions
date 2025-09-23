@@ -38,10 +38,9 @@ jobs:
 
       - name: Fetch base branch
         run: git fetch origin ${{ github.base_ref }} --depth=0
-
+      
       - name: Validate commit messages
         run: |
-          echo "🔎 Checking commits between origin/${{ github.base_ref }} and HEAD"
           for commit in $(git rev-list origin/${{ github.base_ref }}..HEAD); do
             MSG=$(git log --format=%B -n 1 $commit)
             MSG="$(echo "$MSG" | xargs)" # trim whitespace
@@ -52,3 +51,4 @@ jobs:
             fi
           done
           echo "✅ All commit messages follow Conventional Commits with Jira IDs"
+
