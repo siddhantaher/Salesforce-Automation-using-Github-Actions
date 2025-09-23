@@ -39,19 +39,20 @@ jobs:
           fi
           echo "✅ PR title is valid: $PR_TITLE"
 
-      # -------------------------------
-      # Commit Messages Check
-      # -------------------------------
       - name: Check commits in PR
-        run: |
-          git fetch origin ${{ github.base_ref }} --depth=1
-          for commit in $(git rev-list origin/${{ github.base_ref }}..${{ github.head_ref }}); do
-            MSG=$(git log --format=%B -n 1 $commit)
-            MSG="$(echo "$MSG" | xargs)" # trim whitespace
-            if ! [[ "$MSG" =~ ^(feat|fix|chore|refactor|docs|test|style|perf)(\([a-zA-Z0-9_-]+\))?\ \[[A-Za-z0-9]+-[0-9]+\]:\ .+ ]]; then
-              echo "❌ Commit '$commit' message does not follow Conventional Commits with Jira ID:"
-              echo "$MSG"
-              exit 1
-            fi
-          done
-          echo "✅ All commit messages follow Conventional Commits with Jira IDs"
+  run: |
+    # Get all commits in the PR
+    COMMITS=$(jq -r '.pull_request.commits_url' "$GITHUB_EVENT_PATH")
+    echo "Fetching commits from $COMMITS"
+    curl -s -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" "$COMMITS" | jq -r '.[].commit.message' > commit_messages.txt
+
+    while IFS= read -r MSG; do
+      MSG="$(echo "$MSG" | xargs)" # trim whitespace
+      if ! [[ "$MSG" =~ ^(feat|fix|chore|refactor|docs|test|style|perf)(\([a-zA-Z0-9_-]+\))?\ \[[A-Za-z0-9]+-[0-9]+\]:\ .+ ]]; then
+        echo "❌ Commit message does not follow Conventional Commits with Jira ID:"
+        echo "$MSG"
+        exit 1
+      fi
+    done < commit_messages.txt
+
+    echo "✅ All commit messages follow Conventional Commits with Jira IDs"
