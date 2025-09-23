@@ -36,10 +36,8 @@ jobs:
           fi
           echo "✅ Branch name follows required format"
 
-      - name: Fetch base and head branches
-        run: |
-          git fetch origin ${{ github.base_ref }} --depth=0
-          git fetch origin ${{ github.head_ref }} --depth=0
+      - name: Fetch base branch
+        run: git fetch origin ${{ github.base_ref }} --depth=0
 
       - name: Validate commit messages
         run: |
