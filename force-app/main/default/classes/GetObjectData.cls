@@ -95,6 +95,15 @@ public class GetObjectData {
             return (List<JSON2Apex>) System.JSON.deserialize(json, List<JSON2Apex>.class);
         }
     }
+    public static void updateAccounts(List<Account> accList) {
+        for (Account acc : accList) {
+            List<Contact> conList = [SELECT Id, Email FROM Contact WHERE AccountId = :acc.Id];
+            for (Contact c : conList) {
+                c.Email = acc.Name + '@example.com';
+                update c; // ❌ DML inside loop
+            }
+        }
+    }
 
     
     
